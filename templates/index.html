@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Гостиница — курсовой проект</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <h1>Гостиница: база данных</h1>
+
+        <section>
+            <h2>Статистика</h2>
+            <div class="stats-grid">
+                <div class="card">Номеров: <strong>{{ stats.total_rooms }}</strong></div>
+                <div class="card">Гостей: <strong>{{ stats.total_guests }}</strong></div>
+                <div class="card">Бронирований: <strong>{{ stats.total_bookings }}</strong></div>
+                <div class="card">Платежей (₽): <strong>{{ stats.total_payments }}</strong></div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Номера</h2>
+            <table>
+                <tr><th>ID</th><th>Номер</th><th>Тип</th><th>Этаж</th><th>Статус</th></tr>
+                {% for room in rooms %}
+                <tr>
+                    <td>{{ room.id }}</td><td>{{ room.room_number }}</td><td>{{ room.room_type }}</td><td>{{ room.floor }}</td><td>{{ room.status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section>
+            <h2>Гости</h2>
+            <table>
+                <tr><th>ID</th><th>ФИО</th><th>Телефон</th><th>Email</th><th>Паспорт</th></tr>
+                {% for guest in guests %}
+                <tr>
+                    <td>{{ guest.id }}</td><td>{{ guest.first_name }} {{ guest.last_name }}</td><td>{{ guest.phone }}</td><td>{{ guest.email }}</td><td>{{ guest.passport_number }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section>
+            <h2>Бронирования</h2>
+            <table>
+                <tr><th>ID</th><th>Гость</th><th>Номер</th><th>Заезд</th><th>Выезд</th><th>Статус</th><th>Сумма</th></tr>
+                {% for booking in bookings %}
+                <tr>
+                    <td>{{ booking.id }}</td><td>{{ booking.guest }}</td><td>{{ booking.room_number }}</td><td>{{ booking.check_in_date }}</td><td>{{ booking.check_out_date }}</td><td>{{ booking.status }}</td><td>{{ booking.total_price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section>
+            <h2>Услуги</h2>
+            <table>
+                <tr><th>ID</th><th>Название</th><th>Цена</th><th>Активна</th></tr>
+                {% for service in services %}
+                <tr>
+                    <td>{{ service.id }}</td><td>{{ service.name }}</td><td>{{ service.price }}</td><td>{{ 'Да' if service.is_active else 'Нет' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section>
+            <h2>Платежи</h2>
+            <table>
+                <tr><th>ID</th><th>ID брони</th><th>Сумма</th><th>Метод</th><th>Дата</th></tr>
+                {% for payment in payments %}
+                <tr>
+                    <td>{{ payment.id }}</td><td>{{ payment.booking_id }}</td><td>{{ payment.amount }}</td><td>{{ payment.method }}</td><td>{{ payment.paid_at }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+
+        <section class="forms-grid">
+            <form method="post" class="form-card">
+                <h2>Добавить гостя</h2>
+                <input type="hidden" name="form_type" value="guest">
+                <input name="first_name" placeholder="Имя" required>
+                <input name="last_name" placeholder="Фамилия" required>
+                <input name="phone" placeholder="Телефон" required>
+                <input name="email" placeholder="Email">
+                <input name="passport_number" placeholder="Паспорт" required>
+                <button type="submit">Добавить</button>
+            </form>
+
+            <form method="post" class="form-card" id="booking-form">
+                <h2>Добавить бронирование</h2>
+                <input type="hidden" name="form_type" value="booking">
+                <input name="guest_id" type="number" min="1" placeholder="ID гостя" required>
+                <select name="room_id" required>
+                    <option value="">Выберите номер</option>
+                    {% for room in room_choices %}
+                    <option value="{{ room.id }}">{{ room.room_number }}</option>
+                    {% endfor %}
+                </select>
+                <label>Заезд <input name="check_in_date" type="date" required></label>
+                <label>Выезд <input name="check_out_date" type="date" required></label>
+                <input name="total_price" type="number" min="0" step="0.01" placeholder="Сумма" required>
+                <button type="submit">Добавить</button>
+            </form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
